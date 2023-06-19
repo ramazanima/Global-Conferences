@@ -1,33 +1,30 @@
 const express = require("express");
 const debug = require("debug")("app:adminRouter");
-// const mongodb = require("mongodb");
-const {MongoClient} = require("mongodb");
+const { MongoClient } = require("mongodb");
 
 const data = require("../data/sessions.json");
 
-
 const adminRouter = express.Router();
 
-adminRouter.route("/").get((req, res) => {
-    const url = "mongodb+srv://ramazanim:UsA10010110@cluster0.u8nd9pi.mongodb.net/";
-    const dbName = "globomantics"; 
-    (async function mongo(){
-        let client;
-        try{
-            client = await MongoClient.connect(url);
-            debug("Connected to mongo DB");
+adminRouter.route("/").get(async (req, res) => {
+  const url = "mongodb+srv://ramazanim:NLTuPDLq0v8kLT3G@globomantrics.ig51dfh.mongodb.net/?retryWrites=true&w=majority";
+  const dbName = "globomantics";
 
-            const db= client.db(dbName);
+  try {
+    const client = await MongoClient.connect(url);
+    debug("Connected to MongoDB");
 
-            const response = await db.collection("sessions").insertMany(sessions);
+    const db = client.db(dbName);
 
-            res.json(response);
-        }
-        catch(error){
-            debug(error.stack);
-        }
-    } ())
+    const response = await db.collection("data").insertMany(data);
+
+    debug("Data inserted into the database:", response);
+
+    res.json(response);
+  } catch (error) {
+    debug("Error connecting to MongoDB:", error);
+    res.status(500).json({ error: "Failed to connect to the database" });
+  }
 });
 
-
-module.exports = adminRouter; 
+module.exports = adminRouter;
