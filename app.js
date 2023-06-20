@@ -2,6 +2,9 @@ const express = require("express");
 const debug = require("debug")("app");
 const morgan = require("morgan");
 const path = require("path");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 
 const PORT = process.env.PORT || 4000;
 const app = express();
@@ -13,6 +16,10 @@ app.use(morgan("tiny"));
 app.use(express.static(path.join(__dirname, "/public/")));
 app.use(express.json());
 app.use(express.urlencoded({urlencoded: false}));
+app.use(cookieParser());
+app.use(session({ secret: "globomantics" }));
+
+require("./src/config/passport.js")(app);
 
 app.set("views", path.join(__dirname, "src", "views"));
 app.set("view engine", "ejs");
